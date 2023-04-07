@@ -1,0 +1,12 @@
+.container {
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  /* background-color: aquamarine */
+  /* background: linear-gradient(#e66465, #9198e5); */
+  background: linear-gradient(#8aa7f7, #e3c1ff);
+
+}
