@@ -1,44 +1,47 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-import { useState } from 'react';
-import { TextField, FormControl, FormControlLabel, Radio, RadioGroup, Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-const inter = Inter({ subsets: ['latin'] })
-import { Typography, useTheme } from '@mui/material';
-import { useRouter } from 'next/router'
-
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import { useState } from "react";
+import {
+  TextField,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Button,
+  Box,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+const inter = Inter({ subsets: ["latin"] });
+import { Typography, useTheme } from "@mui/material";
+import { useRouter } from "next/router";
 
 const StyledTextField = styled(TextField)({
-  '& input[type=number]': {
-    'MozAppearance': 'textfield',
+  "& input[type=number]": {
+    MozAppearance: "textfield",
   },
-  '& input[type=number]::-webkit-outer-spin-button': {
-    'WebkitAppearance': 'none',
+  "& input[type=number]::-webkit-outer-spin-button": {
+    WebkitAppearance: "none",
     margin: 0,
   },
-  '& input[type=number]::-webkit-inner-spin-button': {
-    'WebkitAppearance': 'none',
+  "& input[type=number]::-webkit-inner-spin-button": {
+    WebkitAppearance: "none",
     margin: 0,
   },
 });
 
-
-
 export default function Home() {
-
   const theme = useTheme();
 
   const router = useRouter();
 
   const [numStates, setNumStates] = useState(0);
-  const [entrySymbols, setEntrySymbols] = useState('');
-  const [exitSymbols, setExitSymbols] = useState('');
-  const [machineType, setMachineType] = useState('');
-
+  const [entrySymbols, setEntrySymbols] = useState("");
+  const [exitSymbols, setExitSymbols] = useState("");
+  const [machineType, setMachineType] = useState("");
 
   const handleNumStatesChange = (event) => {
     setNumStates(event.target.value);
@@ -51,7 +54,6 @@ export default function Home() {
   const handleExitSymbolsChange = (event) => {
     setExitSymbols(event.target.value);
   };
-
 
   const handleMachineTypeChange = (event) => {
     setMachineType(event.target.value);
@@ -68,20 +70,20 @@ export default function Home() {
   };
 
   const submitCreationOfMachine = () => {
-    console.log("Creating machine!")
-    console.log(numStates, entrySymbols, exitSymbols, machineType)
-    if (machineType === 'moore') {
+    console.log("Creating machine!");
+    console.log(numStates, entrySymbols, exitSymbols, machineType);
+    if (machineType === "moore") {
       router.push({
-        pathname: '/moore',
-        query: {numStates, entrySymbols, exitSymbols, machineType }
+        pathname: "/moore",
+        query: { numStates, entrySymbols, exitSymbols, machineType },
       });
-    } else if (machineType === 'mealy'){
+    } else if (machineType === "mealy") {
       router.push({
-        pathname: '/mealy',
-        query: {numStates, entrySymbols, exitSymbols, machineType }
+        pathname: "/mealy",
+        query: { numStates, entrySymbols, exitSymbols, machineType },
       });
     }
-  }
+  };
 
   return (
     <>
@@ -92,62 +94,82 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.container}>
-        <Typography variant='h3' sx={{margin: theme.spacing()}}>Finite State Machine Minimizer</Typography>
-        {/* <Button variant="contained" size="small" color="secondary" onClick={runSmth}>Click here</Button> */}
-        <Typography sx={{marginBottom : theme.spacing(2)}}>Please, specify the attributes of the state machine</Typography>
-      <StyledTextField
-        type="number"
-        label="Number of states"
-        value={numStates}
-        // color="secondary"
-        onChange={handleNumStatesChange}
-        sx={{marginBottom: theme.spacing(2)}}
-        InputProps={{
-          // style : {color: 'secondary'},
-          endAdornment: (
-            <div>
-              <Button size="small" onClick={handleNumStatesIncrease}>
-                <AddIcon />
-              </Button>
-              <Button size="small" onClick={handleNumStatesDecrease}>
-                <RemoveIcon />
-              </Button>
-            </div>
-          ),
-        }}
-      />
-      <Typography sx={{marginBottom: theme.spacing()}}>Separate the values with a comma</Typography>
-      <TextField
-        label="Symbols of entry"
-        value={entrySymbols}
-        onChange={handleEntrySymbolsChange}
-        sx={{marginBottom: theme.spacing(2)}}
-      />
-      <TextField
-        label="Symbols of exit"
-        value={exitSymbols}
-        onChange={handleExitSymbolsChange}
-        sx={{marginBottom: theme.spacing(2)}}
-      />
-      <Typography sx={{marginBottom: theme.spacing()}}>Chose whether the machine is Moore or Mealy</Typography>
-      <FormControl component="fieldset">
-      <RadioGroup row value={machineType} onChange={handleMachineTypeChange}>
-        <FormControlLabel
-          value="moore"
-          control={<Radio />}
-          label="Moore"
-        />
-        <FormControlLabel
-          value="mealy"
-          control={<Radio />}
-          label="Mealy"
-        />
-      </RadioGroup>
-    </FormControl>
-      
-    <Button variant="contained" size="large" color="secondary" onClick={submitCreationOfMachine}>Create Machine</Button>
+        <Box className={[styles.boxBorder]}>
+          <Typography variant="h3" sx={{ margin: theme.spacing() }}>
+            Finite State Machine Minimizer
+          </Typography>
+          {/* <Button variant="contained" size="small" color="secondary" onClick={runSmth}>Click here</Button> */}
+          <Typography sx={{ marginBottom: theme.spacing(2) }}>
+            Please, specify the attributes of the state machine
+          </Typography>
+          <StyledTextField
+            type="number"
+            label="Number of states"
+            value={numStates}
+            //color="error"
+            onChange={handleNumStatesChange}
+            sx={{ marginBottom: theme.spacing(2) }}
+            InputProps={{
+              // style : {color: 'secondary'},
+              endAdornment: (
+                <div>
+                  <Button size="small" onClick={handleNumStatesIncrease}>
+                    <AddIcon />
+                  </Button>
+                  <Button size="small" onClick={handleNumStatesDecrease}>
+                    <RemoveIcon />
+                  </Button>
+                </div>
+              ),
+            }}
+          />
+          <Typography sx={{ marginBottom: theme.spacing() }}>
+            Separate the values with a comma
+          </Typography>
+          <TextField
+            label="Symbols of entry"
+            value={entrySymbols}
+            onChange={handleEntrySymbolsChange}
+            sx={{ marginBottom: theme.spacing(2), marginRight: theme.spacing() }}
+          />
+          <TextField
+            label="Symbols of exit"
+            value={exitSymbols}
+            onChange={handleExitSymbolsChange}
+            sx={{ marginBottom: theme.spacing(2) }}
+          />
+          <Typography sx={{ marginBottom: theme.spacing() }}>
+            Chose whether the machine is Moore or Mealy
+          </Typography>
+          <FormControl component="fieldset">
+            <RadioGroup
+              row
+              value={machineType}
+              onChange={handleMachineTypeChange}
+            >
+              <FormControlLabel
+                value="moore"
+                control={<Radio />}
+                label="Moore"
+              />
+              <FormControlLabel
+                value="mealy"
+                control={<Radio />}
+                label="Mealy"
+              />
+            </RadioGroup>
+          </FormControl>
 
+          <Button
+            variant="contained"
+            size="large"
+            color="secondary"
+            onClick={submitCreationOfMachine}
+          >
+            Create Machine
+          </Button>
+        </Box>
       </main>
     </>
-  )
+  );
 }

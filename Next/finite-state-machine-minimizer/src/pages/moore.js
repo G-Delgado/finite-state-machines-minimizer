@@ -22,9 +22,9 @@ export default function moore() {
 
   // This should have const
   let { machineType, entrySymbols, exitSymbols, numStates } = router.query;
-  entrySymbols = "0,1";
-  exitSymbols = "0,1";
-  numStates = 3;
+  // entrySymbols = "0,1";
+  // exitSymbols = "0,1";
+  // numStates = 3;
   const numEntrySymbols = entrySymbols.split(",").length;
   let entrySymbolsList = entrySymbols.split(",");
   const numFinishSymbols = exitSymbols.split(",").length;
@@ -53,7 +53,9 @@ export default function moore() {
   //     setInputValues(newInputValues);
   //   };
   const [selectedInputValues, setSelectedInputValues] = useState(
-    Array(numEntrySymbols).fill({ input0: "", input1: "" })
+    Array(numEntrySymbols).fill(
+      Object.fromEntries([...Array(numEntrySymbols)].map((_, i) => [`input${i}`, ""]))
+    )
   );
   
   const handleInputChange = (event, rowIndex, colIndex) => {
@@ -78,7 +80,7 @@ export default function moore() {
           Moore machine
         </Typography>
       </Box>
-      <Box sx={{ maxWidth: "90%", margin: "25px auto" }}>
+      <Box sx={{ maxWidth: "70%", margin: "25px auto" }}>
         <TableContainer component={Paper}>
           <Table aria-label="simple table">
             <TableHead>
@@ -155,8 +157,9 @@ export default function moore() {
           </Table>
         </TableContainer>
       </Box>
-
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
       <Button variant="contained" size="large" color="secondary" onClick={printStuff}>Create Machine</Button>
+      </Box>
 
     </>
   );

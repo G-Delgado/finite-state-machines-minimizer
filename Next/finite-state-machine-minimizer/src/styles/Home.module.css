@@ -10,3 +10,13 @@
   background: linear-gradient(#8aa7f7, #e3c1ff);
 
 }
+
+.boxBorder {
+  padding: 2em;
+  border: 3px solid white;
+  color: white;
+  border-radius: 25px;
+  /* display: block; */
+  text-align: center;
+  background-color: rgba(73, 44, 233, 0.2)
+}
