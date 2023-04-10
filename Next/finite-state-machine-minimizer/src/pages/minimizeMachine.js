@@ -1,0 +1,106 @@
+import { useRouter } from "next/router";
+import { Typography, useTheme, Box } from "@mui/material";
+import {getConnectedAutomaton, getConnectedAutomatonMealy} from "../utils/AutomatonMethods";
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  Paper,
+  TableBody
+} from "@mui/material";
+import MooreConnected from "../utils/MooreConnected";
+import MealyConnected from "@/utils/MealyConnected";
+
+export default function MinimizeMachine({ connected, minimized }) {
+  // If props was an array
+  // const connectedAutomaton = props[0];
+  // const minimizedAutomaton = props[1];
+
+  const router = useRouter();
+//   let finishStates = connected.finishStates
+  // const theme = useTheme()
+
+//   const {
+//     type,
+//     transitions: serializedTransitions,
+//     finishStates,
+//     states,
+//   } = router.query;
+  //console.log(transitions)
+//   console.log(serializedTransitions);
+//   let transitions = serializedTransitions.map((str) => JSON.parse(str));
+//   console.log(transitions);
+let newTransitions = connected.newTransitions
+let reachableStates = connected.reachableStates
+let newFinishStates = connected.newFinishStates
+
+  let valuesConnectedTransitions = []
+  connected.newTransitions.map(transition => {
+    let values = Object.values(transition)
+    valuesConnectedTransitions.push(values)
+  })
+  console.log(valuesConnectedTransitions.length)
+
+  return (
+    <>
+    {connected.type === 'moore' ? <MooreConnected newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates}  valuesConnectedTransitions={valuesConnectedTransitions}/>
+    :
+    <MealyConnected newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates} />
+    }
+      
+    </>
+  );
+}
+
+MinimizeMachine.getInitialProps = async ({ query }) => {
+  //const router = useRouter();
+  const {
+    type,
+    transitions: serializedTransitions,
+    finishStatesFinal: serializedFinishStatesFinal,
+    finishStates,
+    states,
+  } = query;
+  //console.log(transitions)
+  console.log(serializedTransitions);
+  let transitions = serializedTransitions.map((str) => JSON.parse(str));
+  console.log("Heeere transitions")
+  console.log(transitions);
+
+  try {
+    if (type === 'moore') {
+        let { newTransitions, reachableStates, newFinishStates } = getConnectedAutomaton(
+          transitions,
+          states,
+          finishStates
+        );
+        //newTransitions = newTransitions.map(str => JSON.parse(str))
+    
+        console.dir("New transitions");
+        console.dir(newTransitions);
+        console.dir("Reachable States");
+        console.dir([...reachableStates]);
+        console.log(newFinishStates)
+        reachableStates = [...reachableStates]
+        // console.log("New Transitions\n" + JSON.stringify(newTransitions))
+        // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
+        return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {} };
+    } else {
+      let finishStatesFinal = serializedFinishStatesFinal.map((str) => JSON.parse(str))
+        let {newTransitions, reachableStates, newFinishStates} = getConnectedAutomatonMealy(transitions, states, finishStatesFinal)
+        console.dir("New transitions 2");
+        console.dir(newTransitions);
+        console.dir("Reachable States");
+        console.dir([...reachableStates]);
+        reachableStates = [...reachableStates]
+
+        // console.log("New Transitions\n" + JSON.stringify(newTransitions))
+        // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
+        return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {} };
+    }   
+  } catch (err) {
+    console.error(err);
+  }
+};

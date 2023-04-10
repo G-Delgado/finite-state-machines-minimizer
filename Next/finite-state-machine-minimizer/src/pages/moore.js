@@ -15,48 +15,83 @@ import {
   Button,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function moore() {
+export default function moore({ machineType, entrySymbols, exitSymbols, numStates }) {
   const router = useRouter();
 
   // This should have const
-  let { machineType, entrySymbols, exitSymbols, numStates } = router.query;
+  // let { machineType, entrySymbols, exitSymbols, numStates } = router.query;
   // entrySymbols = "0,1";
   // exitSymbols = "0,1";
   // numStates = 3;
+  const [states, setStates] = useState([]);
   const numEntrySymbols = entrySymbols.split(",").length;
-  let entrySymbolsList = entrySymbols.split(",");
-  const numFinishSymbols = exitSymbols.split(",").length;
-  let fiishSymbolsList = exitSymbols.split(",");
-  const states = Array.from({ length: parseInt(numStates) }, (_, i) =>
-    String.fromCharCode(65 + i)
-  ); // generate an array of state labels from A to numStates
+  //let entrySymbolsList = entrySymbols.split(",");
+  //const numFinishSymbols = exitSymbols.split(",").length;
+  let finishSymbolsList = exitSymbols.split(",");
   const [selectedFinishStates, setSelectedFinishStates] = useState(
     Array(numStates).fill("")
-  );
+    );
+  //setArrStates(states)
+
+  useEffect(() => {
+    const statesArray = Array.from({ length: parseInt(numStates) }, (_, i) =>
+    String.fromCharCode(65 + i)
+  ); // generate an array of state labels from A to numStates
+  setStates(statesArray)
+  }, [])
+
 
   const printStuff = () => {
     console.log(selectedInputValues)
     console.log(selectedFinishStates)
+
+    let inputValues = JSON.parse(JSON.stringify(selectedInputValues))
+    let finishStates = JSON.parse(JSON.stringify(selectedFinishStates))
+
+    console.log(inputValues)
+    console.log(finishStates)
+    //console.log(inputValues[0])
+
+    let outputValues = {}
+
+    let transitions = []
+
+    for (let i = 0; i < inputValues.length; i++) {
+      for (let inputKey in inputValues[i]) {
+        const asciiCode = 65 + parseInt(inputKey.replace("input", ""));
+        outputValues[String.fromCharCode(asciiCode)] = inputValues[i][inputKey]
+      }
+      transitions.push(outputValues)
+      outputValues = {}
+    }
+
+  
+    console.log(transitions)
+    let serializedTransitions = transitions.map(obj => JSON.stringify(obj)); // convert each object to a string
+
+    console.log(serializedTransitions)
+
+    router.push({
+      pathname: '/minimizeMachine',
+      query: {
+        type: 'moore',
+        transitions: serializedTransitions,
+        finishStates,
+        states
+      }
+    })
+
   }
 
-  //   const [inputValues, setInputValues] = useState(
-  //     Array.from({ length: numEntrySymbols }, () =>
-  //       Array.from({ length: numStates }, () => "")
-  //     )
-  //   );
-
-  //   const handleInputChange = (event, rowIndex, colIndex) => {
-  //     const newInputValues = [...inputValues];
-  //     newInputValues[colIndex][rowIndex] = event.target.value;
-  //     setInputValues(newInputValues);
-  //   };
+  
   const [selectedInputValues, setSelectedInputValues] = useState(
     Array(numEntrySymbols).fill(
       Object.fromEntries([...Array(numEntrySymbols)].map((_, i) => [`input${i}`, ""]))
     )
   );
+
   
   const handleInputChange = (event, rowIndex, colIndex) => {
     const newSelectedInputValues = [...selectedInputValues];
@@ -139,7 +174,7 @@ export default function moore() {
                       value={selectedFinishStates[i]}
                       onChange={(event) => handleChange(event, i)}
                     >
-                      {fiishSymbolsList.map((symbol) => (
+                      {finishSymbolsList.map((symbol) => (
                         <MenuItem key={symbol} value={symbol}>
                           {symbol}
                         </MenuItem>
@@ -163,4 +198,9 @@ export default function moore() {
 
     </>
   );
+}
+
+moore.getInitialProps = async ({ query }) => {
+  let { machineType, entrySymbols, exitSymbols, numStates } = query;
+  return { machineType, entrySymbols, exitSymbols, numStates }
 }

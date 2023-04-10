@@ -15,14 +15,19 @@ import {
   Button,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "@mui/material";
 
-export default function mealy() {
+
+export default function Mealy() {
   const router = useRouter();
   let { machineType, entrySymbols, exitSymbols, numStates } = router.query;
   // entrySymbols = "0,1";
   // exitSymbols = "0,1";
   // numStates = 3;
+  const theme = useTheme()
+
+  const [states, setStates] = useState([]);
 
   const [selectedInputValues, setSelectedInputValues] = useState(
     Array(entrySymbols.split(",").length).fill(
@@ -37,13 +42,18 @@ export default function mealy() {
       Object.fromEntries([...Array(entrySymbols.split(",").length)].map((_, i) => [`input${i}`, ""]))
     )
   );
-  const states = Array.from({ length: parseInt(numStates) }, (_, i) =>
-    String.fromCharCode(65 + i)
-  );
+  
   entrySymbols = entrySymbols.split(",");
   //console.log(entrySymbols.length)
   let numEntrySymbols = entrySymbols.length;
   exitSymbols = exitSymbols.split(",");
+
+  useEffect(() => {
+    const statesArray = Array.from({ length: parseInt(numStates) }, (_, i) =>
+    String.fromCharCode(65 + i)
+  ); // generate an array of state labels from A to numStates
+  setStates(statesArray)
+  }, [])
 
   // const handleChange = (event, rowIndex) => {
   //   const newSelectedFinishStates = [...selectedFinishStates];
@@ -71,6 +81,58 @@ export default function mealy() {
   const printStuff = () => {
     console.log(selectedInputValues)
     console.log(selectedFinishStates)
+
+    let inputValues = JSON.parse(JSON.stringify(selectedInputValues))
+    let finishStates = JSON.parse(JSON.stringify(selectedFinishStates))
+
+    let outputValues = {}
+    let transitions = []
+    let finishStatesNew = []
+
+    for (let i = 0; i < inputValues.length; i++) {
+      for (let inputKey in inputValues[i]) {
+        const asciiCode = 65 + parseInt(inputKey.replace("input", ""));
+        outputValues[String.fromCharCode(asciiCode)] = inputValues[i][inputKey]
+      }
+      transitions.push(outputValues)
+      outputValues = {}
+    }
+
+    for (let i = 0; i < finishStates.length; i++) {
+      for (let inputKey in finishStates[i]) {
+        const asciiCode = 65 + parseInt(inputKey.replace("input", ""));
+        outputValues[String.fromCharCode(asciiCode)] = finishStates[i][inputKey]
+      }
+      finishStatesNew.push(outputValues)
+      outputValues = {}
+    }
+
+    // for (let i = 0; i < inputValues.length; i++) {
+    //   for (let inputKey in inputValues[i]) {
+    //     inputValues[i][inputKey] = inputValues[i][inputKey] + "," + finishStates[i][inputKey]
+    //     const asciiCode = 65 + parseInt(inputKey.replace("input", ""));
+    //     outputValues[String.fromCharCode(asciiCode)] = inputValues[i][inputKey]
+    //   }
+    //   machineStates.push(outputValues)
+    //   outputValues = {}
+    // }
+
+    let serializedTransitions = transitions.map(obj => JSON.stringify(obj));
+    let serializedFinishStatesFinal = finishStatesNew.map(obj => JSON.stringify(obj))
+    // let serializedMachineStates = machineStates.map(obj => JSON.stringify(obj));
+
+    console.log(transitions)
+
+    router.push({
+      pathname: "/minimizeMachine",
+      query: {
+        type: 'mealy',
+        transitions: serializedTransitions,
+        finishStatesFinal: serializedFinishStatesFinal,
+        states
+      }
+    })
+
   }
 
   return (
@@ -136,7 +198,7 @@ export default function mealy() {
                         <Select
                           fullWidth
                           labelId={`select-labelg-${i}-${j}`}
-                          value={selectedFinishStates[i]}
+                          value={selectedFinishStates[j][`input${i}`]}
                           onChange={(event) => handleChange(event, j,i)}
                         >
                           {exitSymbols.map((symbol) => (
