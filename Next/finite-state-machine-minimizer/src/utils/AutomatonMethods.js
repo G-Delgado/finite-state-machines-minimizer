@@ -147,7 +147,7 @@ export function getInitialPartitionMoore(states, finishStates) {
 
   console.log("The partition before:")
   console.log(partition)
-  
+
   for (let i = 0; i < states.length; i++) {
     partition[finishStates[i]].push(states[i])
   }
@@ -159,8 +159,44 @@ export function getInitialPartitionMoore(states, finishStates) {
     p1.push(partition[val])
   }
 
-  
+
   return p1
+}
+
+export function getInitialPartitionMealy(states, exitStates) {
+  let partition = []
+  let noPartition = [...states]
+  for (let i = 0; i < noPartition.length; i++) {
+    let actualState = noPartition[i]
+    let tempGroup = partition.find(group => group.includes(actualState))
+    if (tempGroup === undefined) {
+      partition.push([actualState])
+      let nextState = noPartition[i + 1]
+      let sameGroup = true
+      for (let j = 0; j < exitStates.length && sameGroup; j++) {
+        let actualExitState = exitStates[j]
+        console.log("Estado 1:")
+        console.log(actualState)
+        console.log("Estado 2")
+        console.log(nextState)
+        console.log(`Values: ${actualExitState[actualState]}-${actualExitState[nextState]}`)
+        if (actualExitState[actualState] != actualExitState[nextState]) {
+          sameGroup = false
+        }
+      }
+      if (sameGroup) {
+        let tempGroup = partition.find(group => group.includes(actualState))
+        if (tempGroup == undefined) {
+          partition.push([nextState])
+        } else {
+          tempGroup.push(nextState)
+        }
+      }
+    }
+  }
+  console.log("Partición Inicial de Mealy:")
+  console.log(partition)
+  return partition
 }
 
 function getNextPartition(actualPartition, transitions) {
@@ -182,10 +218,10 @@ function getNextPartition(actualPartition, transitions) {
           console.log(newGroups)
           console.log("Tumama")
           console.log([newGroups])
-          for (let k =j+1; k < actualGroup.length; k++) {
+          for (let k = j + 1; k < actualGroup.length; k++) {
             if (k != j) {
               //let actualState = actualGroup[j]
-              let nextState  = actualGroup[k]
+              let nextState = actualGroup[k]
               let sameGroup = true
               for (let l = 0; l < transitions.length && sameGroup; l++) {
                 let actualTransition = transitions[l]
@@ -231,11 +267,11 @@ function getNextPartition(actualPartition, transitions) {
   return newPartition
 }
 
-const checkIfInTheSameGroup = (state1,state2, groups) => {
+const checkIfInTheSameGroup = (state1, state2, groups) => {
   let inTheSameGroup = false
   for (let i = 0; i < groups.length && !inTheSameGroup; i++) {
     let arr = groups[i]
-    if(arr.includes(state1) && arr.includes(state2)) {
+    if (arr.includes(state1) && arr.includes(state2)) {
       inTheSameGroup = true
     }
   }
@@ -247,7 +283,7 @@ export function getFinalPartition(initialPartition, transitions) {
   let nextPartition = getNextPartition(initialPartition, transitions)
   let prevPartition = null
   let maxTimes = 0
-  while (JSON.stringify(nextPartition) != JSON.stringify(prevPartition) && maxTimes<10) {
+  while (JSON.stringify(nextPartition) != JSON.stringify(prevPartition) && maxTimes < 10) {
     prevPartition = nextPartition
     nextPartition = getNextPartition(prevPartition, transitions)
     maxTimes++

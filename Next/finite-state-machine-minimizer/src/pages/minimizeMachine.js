@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Typography, useTheme, Box } from "@mui/material";
-import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition} from "../utils/AutomatonMethods";
+import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition, getInitialPartitionMealy} from "../utils/AutomatonMethods";
 import {
   TableContainer,
   Table,
@@ -98,6 +98,12 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.dir("Reachable States");
         console.dir([...reachableStates]);
         reachableStates = [...reachableStates]
+
+        let p1 = getInitialPartitionMealy(reachableStates, newFinishStates)
+
+        let finalPartition = getFinalPartition(p1, newTransitions)
+        console.log("MEALY FINAL PARTITIOOON")
+        console.log(finalPartition)
 
         // console.log("New Transitions\n" + JSON.stringify(newTransitions))
         // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
