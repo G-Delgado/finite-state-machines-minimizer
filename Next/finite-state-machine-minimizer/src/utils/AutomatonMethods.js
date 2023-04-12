@@ -126,3 +126,132 @@ export function getConnectedAutomatonMealy(
 
   return { newTransitions, reachableStates, newFinishStates };
 }
+
+export function getInitialPartitionMoore(states, finishStates) {
+  console.log("These are the states:")
+  console.log(states)
+  console.log("These are its finish values:")
+  console.log(finishStates)
+  let partition = {}
+  let finishStatesUnique = new Set(finishStates)
+
+  console.log(finishStatesUnique)
+
+  // for (let i = 0; i < finishStatesUnique.size; i++) {
+  //   partition[finishStatesUnique[i]] = []
+  // }
+
+  for (let finishState of finishStatesUnique) {
+    partition[finishState] = []
+  }
+
+  console.log("The partition before:")
+  console.log(partition)
+  
+  for (let i = 0; i < states.length; i++) {
+    partition[finishStates[i]].push(states[i])
+  }
+  console.log("The partition:")
+  console.log(partition)
+
+  let p1 = []
+  for (let val in partition) {
+    p1.push(partition[val])
+  }
+
+  
+  return p1
+}
+
+function getNextPartition(actualPartition, transitions) {
+  let newPartition = []
+  for (let i = 0; i < actualPartition.length; i++) {
+    let actualGroup = actualPartition[i]
+    if (actualGroup.length > 1) {
+      let newGroups = []
+      for (let j = 0; j < actualGroup.length; j++) {
+        console.log(`Iteración ${j}////////////`)
+        let actualState = actualGroup[j]
+        let tempGroup = newGroups.find(group => group.includes(actualState))
+        console.log(`El grupo al que pertenece es ${tempGroup}`)
+        console.log(`ITERACIÓN ${i} PARA NEW GROUPS`)
+        console.log(newGroups)
+        if (tempGroup == undefined) {
+          newGroups.push([actualState])
+          console.log(`Grupos actuales: ${newGroups}`)
+          console.log(newGroups)
+          console.log("Tumama")
+          console.log([newGroups])
+          for (let k =j+1; k < actualGroup.length; k++) {
+            if (k != j) {
+              //let actualState = actualGroup[j]
+              let nextState  = actualGroup[k]
+              let sameGroup = true
+              for (let l = 0; l < transitions.length && sameGroup; l++) {
+                let actualTransition = transitions[l]
+                if (!checkIfInTheSameGroup(actualTransition[actualState], actualTransition[nextState], actualPartition)) {
+                  console.log("Group Checking!")
+                  console.log(actualState)
+                  console.log(nextState)
+                  sameGroup = false
+                  //newGroups.push([nextState])
+                }
+                // } else {
+                //   console.log("You crazy ma nigga")
+                //   newGroups.find(group => group.includes(actualState)).push(nextState)
+                // }
+                // } else {
+                //   let tempGroup = newGroups.find(group => group.includes(actualState))
+                //   if (tempGroup.length > 0) {
+                //     tempGroup.push(nextState)
+                //   } else {
+                //     newGroups.push([actualState,nextState])
+                //   }
+                // }
+              }
+              if (sameGroup) {
+                let tempGroup = newGroups.find(group => group.includes(actualState))
+                if (tempGroup == undefined) {
+                  newGroups.push([nextState])
+                } else {
+                  tempGroup.push(nextState)
+                }
+              }
+            }
+          }
+        }
+      }
+      for (let j = 0; j < newGroups.length; j++) {
+        newPartition.push(newGroups[j])
+      }
+    } else {
+      newPartition.push(actualPartition[i])
+    }
+  }
+  return newPartition
+}
+
+const checkIfInTheSameGroup = (state1,state2, groups) => {
+  let inTheSameGroup = false
+  for (let i = 0; i < groups.length && !inTheSameGroup; i++) {
+    let arr = groups[i]
+    if(arr.includes(state1) && arr.includes(state2)) {
+      inTheSameGroup = true
+    }
+  }
+
+  return inTheSameGroup
+}
+
+export function getFinalPartition(initialPartition, transitions) {
+  let nextPartition = getNextPartition(initialPartition, transitions)
+  let prevPartition = null
+  let maxTimes = 0
+  while (JSON.stringify(nextPartition) != JSON.stringify(prevPartition) && maxTimes<10) {
+    prevPartition = nextPartition
+    nextPartition = getNextPartition(prevPartition, transitions)
+    maxTimes++
+  }
+  return nextPartition
+}
+

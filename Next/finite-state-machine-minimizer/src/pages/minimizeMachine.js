@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Typography, useTheme, Box } from "@mui/material";
-import {getConnectedAutomaton, getConnectedAutomatonMealy} from "../utils/AutomatonMethods";
+import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition} from "../utils/AutomatonMethods";
 import {
   TableContainer,
   Table,
@@ -14,27 +14,12 @@ import MooreConnected from "../utils/MooreConnected";
 import MealyConnected from "@/utils/MealyConnected";
 
 export default function MinimizeMachine({ connected, minimized }) {
-  // If props was an array
-  // const connectedAutomaton = props[0];
-  // const minimizedAutomaton = props[1];
 
   const router = useRouter();
-//   let finishStates = connected.finishStates
-  // const theme = useTheme()
 
-//   const {
-//     type,
-//     transitions: serializedTransitions,
-//     finishStates,
-//     states,
-//   } = router.query;
-  //console.log(transitions)
-//   console.log(serializedTransitions);
-//   let transitions = serializedTransitions.map((str) => JSON.parse(str));
-//   console.log(transitions);
-let newTransitions = connected.newTransitions
-let reachableStates = connected.reachableStates
-let newFinishStates = connected.newFinishStates
+  let newTransitions = connected.newTransitions
+  let reachableStates = connected.reachableStates
+  let newFinishStates = connected.newFinishStates
 
   let valuesConnectedTransitions = []
   connected.newTransitions.map(transition => {
@@ -49,7 +34,7 @@ let newFinishStates = connected.newFinishStates
     :
     <MealyConnected newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates} />
     }
-      
+    
     </>
   );
 }
@@ -78,7 +63,7 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         );
         //newTransitions = newTransitions.map(str => JSON.parse(str))
     
-        console.dir("New transitions");
+        console.dir("New transitions"); 
         console.dir(newTransitions);
         console.dir("Reachable States");
         console.dir([...reachableStates]);
@@ -86,6 +71,24 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         reachableStates = [...reachableStates]
         // console.log("New Transitions\n" + JSON.stringify(newTransitions))
         // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
+        
+
+        // Initial partition for moore
+        let p1 = getInitialPartitionMoore(reachableStates, newFinishStates)
+        console.log("Initial Moore Partition:")
+        console.log(p1)
+
+        // let p2 = getNextPartition(p1, newTransitions)
+        // console.log("SECOND PARTITION!!!")
+        // console.log(p2)
+
+        // let p3 = getNextPartition(p1, newTransitions)
+        // console.log("THIRD PARTITION!!!")
+        // console.log(p3)
+        let finalPartition = getFinalPartition(p1, newTransitions)
+        console.log("FINAL PARTITIONN!!")
+        console.log(finalPartition)
+
         return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {} };
     } else {
       let finishStatesFinal = serializedFinishStatesFinal.map((str) => JSON.parse(str))
