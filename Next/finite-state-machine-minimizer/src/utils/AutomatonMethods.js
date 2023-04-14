@@ -291,3 +291,40 @@ export function getFinalPartition(initialPartition, transitions) {
   return nextPartition
 }
 
+export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition, finishStates, states, transitions) {
+  // Transform the finalPartition to join the states into one. ie. [['CF'],['B','D']] -> ['CF','BD']
+  let minimizedStates = []
+  for (let i = 0; i < finalPartition.length; i++) {
+    let actualState = finalPartition[i].join('')
+    minimizedStates.push(actualState)
+  }
+
+  // Transform the transitions
+  for (let i = 0; i < transitions.length; i++) {
+    let transition = transitions[i];
+    for (let key in transition) {
+      let value = transition[key];
+      let minimizedValue = '';
+      for (let j = 0; j < minimizedStates.length; j++) {
+        if (minimizedStates[j].includes(value)) {
+          minimizedValue = minimizedStates[j];
+          break;
+        }
+      }
+      transition[key] = minimizedStates[states.indexOf(key)] + ':' + minimizedValue;
+    }
+  }
+
+  let mapping = {}
+  for (let i = 0; i < states.length; i++) {
+    mapping[states[i]] = ""
+  }
+
+  // Assign the finishStates
+  let minimizedFinishStates = []
+
+
+
+
+}
+

@@ -90,7 +90,7 @@ export default function moore({ machineType, entrySymbols, exitSymbols, numState
     Array(numEntrySymbols).fill(
       Object.fromEntries([...Array(numEntrySymbols)].map((_, i) => [`input${i}`, ""]))
     )
-  );  
+  );
   const handleInputChange = (event, rowIndex, colIndex) => {
     const newSelectedInputValues = [...selectedInputValues];
     newSelectedInputValues[rowIndex]   = {
