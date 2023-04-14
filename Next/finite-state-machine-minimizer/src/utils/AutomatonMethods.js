@@ -140,7 +140,7 @@ export function getInitialPartitionMoore(states, finishStates) {
   // for (let i = 0; i < finishStatesUnique.size; i++) {
   //   partition[finishStatesUnique[i]] = []
   // }
-
+  // {0: [], 1:[]}
   for (let finishState of finishStatesUnique) {
     partition[finishState] = []
   }
@@ -214,9 +214,11 @@ export function getInitialPartitionMealy(states, exitStates) {
 function getNextPartition(actualPartition, transitions) {
   let newPartition = []
   for (let i = 0; i < actualPartition.length; i++) {
+
     let actualGroup = actualPartition[i]
     if (actualGroup.length > 1) {
       let newGroups = []
+
       for (let j = 0; j < actualGroup.length; j++) {
         console.log(`Iteración ${j}////////////`)
         let actualState = actualGroup[j]
@@ -224,18 +226,22 @@ function getNextPartition(actualPartition, transitions) {
         console.log(`El grupo al que pertenece es ${tempGroup}`)
         console.log(`ITERACIÓN ${i} PARA NEW GROUPS`)
         console.log(newGroups)
+
         if (tempGroup == undefined) {
           newGroups.push([actualState])
           console.log(`Grupos actuales: ${newGroups}`)
           console.log(newGroups)
           console.log("Tumama")
           console.log([newGroups])
+
           for (let k = j + 1; k < actualGroup.length; k++) {
+
             if (k != j) {
               //let actualState = actualGroup[j]
               let nextState = actualGroup[k]
               let sameGroup = true
               for (let l = 0; l < transitions.length && sameGroup; l++) {
+
                 let actualTransition = transitions[l]
                 if (!checkIfInTheSameGroup(actualTransition[actualState], actualTransition[nextState], actualPartition)) {
                   console.log("Group Checking!")
@@ -244,18 +250,6 @@ function getNextPartition(actualPartition, transitions) {
                   sameGroup = false
                   //newGroups.push([nextState])
                 }
-                // } else {
-                //   console.log("You crazy ma nigga")
-                //   newGroups.find(group => group.includes(actualState)).push(nextState)
-                // }
-                // } else {
-                //   let tempGroup = newGroups.find(group => group.includes(actualState))
-                //   if (tempGroup.length > 0) {
-                //     tempGroup.push(nextState)
-                //   } else {
-                //     newGroups.push([actualState,nextState])
-                //   }
-                // }
               }
               if (sameGroup) {
                 let tempGroup = newGroups.find(group => group.includes(actualState))
@@ -294,11 +288,11 @@ const checkIfInTheSameGroup = (state1, state2, groups) => {
 export function getFinalPartition(initialPartition, transitions) {
   let nextPartition = getNextPartition(initialPartition, transitions)
   let prevPartition = null
-  let maxTimes = 0
-  while (JSON.stringify(nextPartition) != JSON.stringify(prevPartition) && maxTimes < 10) {
+  //let maxTimes = 0
+  while (JSON.stringify(nextPartition) != JSON.stringify(prevPartition)/* && maxTimes < 10*/) {
     prevPartition = nextPartition
     nextPartition = getNextPartition(prevPartition, transitions)
-    maxTimes++
+    //maxTimes++
   }
   return nextPartition
 }
