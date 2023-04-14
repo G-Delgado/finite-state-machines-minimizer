@@ -166,32 +166,44 @@ export function getInitialPartitionMoore(states, finishStates) {
 export function getInitialPartitionMealy(states, exitStates) {
   let partition = []
   let noPartition = [...states]
+
   for (let i = 0; i < noPartition.length; i++) {
+
     let actualState = noPartition[i]
     let tempGroup = partition.find(group => group.includes(actualState))
+    console.log(`${tempGroup} es el valor para ${actualState}`)
+    console.log("Aquí es:")
+    console.log(`${actualState}`)
     if (tempGroup === undefined) {
       partition.push([actualState])
-      let nextState = noPartition[i + 1]
-      let sameGroup = true
-      for (let j = 0; j < exitStates.length && sameGroup; j++) {
-        let actualExitState = exitStates[j]
-        console.log("Estado 1:")
-        console.log(actualState)
-        console.log("Estado 2")
-        console.log(nextState)
-        console.log(`Values: ${actualExitState[actualState]}-${actualExitState[nextState]}`)
-        if (actualExitState[actualState] != actualExitState[nextState]) {
-          sameGroup = false
+      for (let j = i+1; j < noPartition.length; j++ ){
+        let nextState = noPartition[j]
+        let sameGroup = true
+        for (let k = 0; k < exitStates.length && sameGroup; k++) {
+  
+          let actualExitState = exitStates[k]
+          console.log("Estado 1:")
+          console.log(actualState)
+          console.log("Estado 2")
+          console.log(nextState)
+          console.log(`Values: ${actualExitState[actualState]}-${actualExitState[nextState]}`)
+          if (actualExitState[actualState] != actualExitState[nextState]) {
+            sameGroup = false
+          }
+        }
+        if (sameGroup) {
+          let tempGroup = partition.find(group => group.includes(actualState))
+
+          console.log("Grupo Encontrado")
+          console.log(tempGroup)
+          if (tempGroup === undefined) {
+            partition.push([nextState])
+          } else {
+            tempGroup.push(nextState)
+          }
         }
       }
-      if (sameGroup) {
-        let tempGroup = partition.find(group => group.includes(actualState))
-        if (tempGroup == undefined) {
-          partition.push([nextState])
-        } else {
-          tempGroup.push(nextState)
-        }
-      }
+      
     }
   }
   console.log("Partición Inicial de Mealy:")
@@ -300,10 +312,10 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
   }
 
   // Transform the transitions
-  let newTransitions = []
+  let newMinimizedTransitions = []
   for (let i = 0; i < transitions.length; i++) {
     let transition = transitions[i];
-    newTransitions.push({})
+    newMinimizedTransitions.push({})
     for (let key in transition) {
       let value = transition[key];
       let minimizedValue = '';
@@ -316,7 +328,7 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
           minimizedKey = minimizedStates[j]
         }
       }
-      newTransitions[i][minimizedKey] = minimizedValue
+      newMinimizedTransitions[i][minimizedKey] = minimizedValue
     }
   }
 
@@ -336,10 +348,12 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
   console.log(minimizedStates)
 
   console.log("Nuevas transiciones:")
-  console.log(newTransitions)
+  console.log(newMinimizedTransitions)
 
   console.log("Nuevos estados finanles:")
   console.log(minimizedFinishStates)
+
+  return {minimizedStates, newMinimizedTransitions, minimizedFinishStates}
 }
 
 const returnFinishStateOfMinimizedState = (minimizedState, finishStates, states) => {

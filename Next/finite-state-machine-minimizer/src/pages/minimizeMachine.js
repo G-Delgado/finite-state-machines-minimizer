@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import MooreConnected from "../utils/MooreConnected";
 import MealyConnected from "@/utils/MealyConnected";
+import MooreMinimized from "@/utils/MooreMinimized";
+import MealyMinimized from "../utils/MealyMinimized";
 
 export default function MinimizeMachine({ connected, minimized }) {
 
@@ -21,6 +23,7 @@ export default function MinimizeMachine({ connected, minimized }) {
   let reachableStates = connected.reachableStates
   let newFinishStates = connected.newFinishStates
 
+
   let valuesConnectedTransitions = []
   connected.newTransitions.map(transition => {
     let values = Object.values(transition)
@@ -28,11 +31,25 @@ export default function MinimizeMachine({ connected, minimized }) {
   })
   console.log(valuesConnectedTransitions.length)
 
+  if (connected.type ===  'moore') {
+    let minimizedValuesConnectedTransitions = []
+    minimized.newMinimizedTransitions.map(transition => {
+      let values = Object.values(transition)
+      minimizedValuesConnectedTransitions.push(values)
+    })
+  }
+  
+
   return (
     <>
     {connected.type === 'moore' ? <MooreConnected newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates}  valuesConnectedTransitions={valuesConnectedTransitions}/>
     :
     <MealyConnected newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates} />
+    }
+    {
+      connected.type === 'moore' ? <MooreMinimized newMinimizedTransitions={minimized.newMinimizedTransitions} minimizedStates={minimized.minimizedStates} minimizedFinishStates={minimized.minimizedFinishStates} minimizedValuesConnectedTransitions={minimizedValuesConnectedTransitions}/>
+      :
+      <MealyMinimized newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates}/>
     }
     
     </>
@@ -89,9 +106,9 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.log("FINAL PARTITIONN!!")
         console.log(finalPartition)
 
-        mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition, {...newFinishStates}, reachableStates, newTransitions)
+        let {minimizedStates, newMinimizedTransitions, minimizedFinishStates} = mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition, {...newFinishStates}, reachableStates, newTransitions)
 
-        return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {} };
+        return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {minimizedStates, newMinimizedTransitions, minimizedFinishStates} };
     } else {
       let finishStatesFinal = serializedFinishStatesFinal.map((str) => JSON.parse(str))
         let {newTransitions, reachableStates, newFinishStates} = getConnectedAutomatonMealy(transitions, states, finishStatesFinal)
