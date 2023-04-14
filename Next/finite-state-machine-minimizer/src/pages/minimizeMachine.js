@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Typography, useTheme, Box } from "@mui/material";
-import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition, getInitialPartitionMealy, mooreJoinPartitionWithTransitionsAndFinishStates} from "../utils/AutomatonMethods";
+import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition, getInitialPartitionMealy, mooreJoinPartitionWithTransitionsAndFinishStates, mealyJoinPartitionWithTransitionsAndExitStates} from "../utils/AutomatonMethods";
 import {
   TableContainer,
   Table,
@@ -31,13 +31,11 @@ export default function MinimizeMachine({ connected, minimized }) {
   })
   console.log(valuesConnectedTransitions.length)
 
-  if (connected.type ===  'moore') {
-    let minimizedValuesConnectedTransitions = []
-    minimized.newMinimizedTransitions.map(transition => {
-      let values = Object.values(transition)
-      minimizedValuesConnectedTransitions.push(values)
-    })
-  }
+  let minimizedValuesConnectedTransitions = []
+  minimized.newMinimizedTransitions.map(transition => {
+    let values = Object.values(transition)
+    minimizedValuesConnectedTransitions.push(values)
+  })
   
 
   return (
@@ -49,7 +47,7 @@ export default function MinimizeMachine({ connected, minimized }) {
     {
       connected.type === 'moore' ? <MooreMinimized newMinimizedTransitions={minimized.newMinimizedTransitions} minimizedStates={minimized.minimizedStates} minimizedFinishStates={minimized.minimizedFinishStates} minimizedValuesConnectedTransitions={minimizedValuesConnectedTransitions}/>
       :
-      <MealyMinimized newTransitions={newTransitions} reachableStates={reachableStates} newFinishStates={newFinishStates}/>
+      <MealyMinimized newMinimizedTransitions={minimized.newMinimizedTransitions} minimizedStates={minimized.minimizedStates} minimizedFinishStates={minimized.minimizedFinishStates}/>
     }
     
     </>
@@ -124,9 +122,11 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.log("MEALY FINAL PARTITIOOON")
         console.log(finalPartition)
 
+        let {minimizedStates, newMinimizedTransitions, minimizedFinishStates} = mealyJoinPartitionWithTransitionsAndExitStates(finalPartition, newFinishStates, reachableStates, newTransitions)
+
         // console.log("New Transitions\n" + JSON.stringify(newTransitions))
         // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
-        return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {} };
+        return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {minimizedStates, newMinimizedTransitions, minimizedFinishStates} };
     }   
   } catch (err) {
     console.error(err);

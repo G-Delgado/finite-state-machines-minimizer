@@ -356,6 +356,77 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
   return {minimizedStates, newMinimizedTransitions, minimizedFinishStates}
 }
 
+export function mealyJoinPartitionWithTransitionsAndExitStates(finalPartition, finishStates, states, transitions) {
+  // Transform the finalPartition to join the states into one. ie. [['CF'],['B','D']] -> ['CF','BD']
+  let minimizedStates = []
+  for (let i = 0; i < finalPartition.length; i++) {
+    let actualState = finalPartition[i].join('')
+    minimizedStates.push(actualState)
+  }
+
+  // Transform the transitions
+  let newMinimizedTransitions = []
+  for (let i = 0; i < transitions.length; i++) {
+    let transition = transitions[i];
+    newMinimizedTransitions.push({})
+    for (let key in transition) {
+      let value = transition[key];
+      let minimizedValue = '';
+      let minimizedKey = '';
+      for (let j = 0; j < minimizedStates.length; j++) {
+        if (minimizedStates[j].includes(value)) {
+          minimizedValue = minimizedStates[j];
+        }
+        if (minimizedStates[j].includes(key)) {
+          minimizedKey = minimizedStates[j]
+        }
+      }
+      newMinimizedTransitions[i][minimizedKey] = minimizedValue
+    }
+  }
+
+
+  // Assign the finishStates
+  // ['A','B','C','D','E','F','G']
+  /* [
+    {"A":0, "B":1, "C":0, "D":1, "E":1, "F":0, "G":1},
+    {"A":0, "B":1, "C":0, "D":1,"E":1,"F":0,"G":1}
+]*/
+  // ['A','F,'C','BD','EG']
+  console.log("Los estados finales")
+  console.log(finishStates)
+  let minimizedFinishStates = []
+  for (let i = 0; i < finishStates.length; i++) {
+    let finishState = finishStates[i];
+    minimizedFinishStates.push({})
+    for (let key in finishState) {
+      let value = finishState[key];
+      let minimizedValue = '';
+      let minimizedKey = '';
+      for (let j = 0; j < minimizedStates.length; j++) {
+        if (minimizedStates[j].includes(value)) {
+          minimizedValue = minimizedStates[j];
+        }
+        if (minimizedStates[j].includes(key)) {
+          minimizedKey = minimizedStates[j]
+        }
+      }
+      minimizedFinishStates[i][minimizedKey] = value
+    }
+  }
+  
+  console.log("Estados minimizados:")
+  console.log(minimizedStates)
+
+  console.log("Nuevas transiciones:")
+  console.log(newMinimizedTransitions)
+
+  console.log("Nuevos estados finanles:")
+  console.log(minimizedFinishStates)
+
+  return {minimizedStates, newMinimizedTransitions, minimizedFinishStates}
+}
+
 const returnFinishStateOfMinimizedState = (minimizedState, finishStates, states) => {
   let foundFinishState = false
   let finishState = ""

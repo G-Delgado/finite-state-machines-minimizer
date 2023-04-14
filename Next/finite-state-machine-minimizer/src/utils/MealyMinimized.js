@@ -10,17 +10,20 @@ import {
     Box
   } from "@mui/material";
 
-export default function MealyMinimized({newTransitions, reachableStates, newFinishStates}) {
+export default function MealyMinimized({newMinimizedTransitions, minimizedStates, minimizedFinishStates}) {
     let outputValues = {}
     let machineStates = []
     console.log("New transitions")
-    console.log(newTransitions)
-    console.log("New finish states")
-    console.log(newFinishStates)
-    for (let i = 0; i < newTransitions.length; i++) {
+    console.log(newMinimizedTransitions)
+    minimizedStates.sort();
+    console.log("New finish states ")
+    console.log(minimizedFinishStates)
+    console.log("Minimized states")
+    console.log(minimizedStates)
+    for (let i = 0; i < newMinimizedTransitions.length; i++) {
         let test = {}
-        for (let inputKey in newTransitions[i]) {
-            test[inputKey] = newTransitions[i][inputKey] + "," + newFinishStates[i][inputKey]
+        for (let inputKey in newMinimizedTransitions[i]) {
+            test[inputKey] = newMinimizedTransitions[i][inputKey] + "," + minimizedFinishStates[i][inputKey]
             // outputValues[inputKey] = test[inputKey]
         }
         machineStates.push(test)
@@ -39,7 +42,7 @@ export default function MealyMinimized({newTransitions, reachableStates, newFini
     return (
         <>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Typography variant="h4">Connected Automaton</Typography>
+            <Typography variant="h4">Minimized Automaton</Typography>
           </Box>
           <Box sx={{ maxWidth: "70%", margin: "25px auto" }}>
             <TableContainer component={Paper}>
@@ -48,7 +51,7 @@ export default function MealyMinimized({newTransitions, reachableStates, newFini
                   <TableRow>
                     <TableCell align="center">States</TableCell>
                     {Array.from(
-                      { length: newTransitions.length },
+                      { length: newMinimizedTransitions.length },
                       (_, i) => (
                         <TableCell key={`entry-${i}`} align="center">
                           Input {i}
@@ -59,9 +62,9 @@ export default function MealyMinimized({newTransitions, reachableStates, newFini
                 </TableHead>
                 <TableBody>
                 {/* connected.reachableStates.map(state => */}
-                    {Array.from({length: reachableStates.length}, (_,i) => (
+                    {Array.from({length: minimizedStates.length}, (_,i) => (
                         <TableRow>
-                            <TableCell align="center" key={reachableStates[i]}>{reachableStates[i]}</TableCell>
+                            <TableCell align="center" key={minimizedStates[i]}>{minimizedStates[i]}</TableCell>
                             {Array.from({length: valuesConnectedTransitions.length}, (_,j) => (
                                 <TableCell align="center" key={`cell-${j}-input0`}>
                                     {valuesConnectedTransitions[j][i]}
