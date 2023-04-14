@@ -300,18 +300,23 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
   }
 
   // Transform the transitions
+  let newTransitions = []
   for (let i = 0; i < transitions.length; i++) {
     let transition = transitions[i];
+    newTransitions.push({})
     for (let key in transition) {
       let value = transition[key];
       let minimizedValue = '';
+      let minimizedKey = '';
       for (let j = 0; j < minimizedStates.length; j++) {
         if (minimizedStates[j].includes(value)) {
           minimizedValue = minimizedStates[j];
-          break;
+        }
+        if (minimizedStates[j].includes(key)) {
+          minimizedKey = minimizedStates[j]
         }
       }
-      transition[key] = minimizedStates[states.indexOf(key)] + ':' + minimizedValue;
+      newTransitions[i][minimizedKey] = minimizedValue
     }
   }
 
@@ -331,7 +336,7 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
   console.log(minimizedStates)
 
   console.log("Nuevas transiciones:")
-  console.log(transitions)
+  console.log(newTransitions)
 
   console.log("Nuevos estados finanles:")
   console.log(minimizedFinishStates)
