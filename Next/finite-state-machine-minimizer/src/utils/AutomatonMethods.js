@@ -315,16 +315,39 @@ export function mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition,
     }
   }
 
-  let mapping = {}
-  for (let i = 0; i < states.length; i++) {
-    mapping[states[i]] = ""
-  }
 
   // Assign the finishStates
+  // ['A','B','C','D','E','F','G','H','I','J','K']
+  // [0,0,0,0,0,0,0,0,1,0,1]
+  // ['A','BD','CF','EH','GJ','IK']
   let minimizedFinishStates = []
+  for (let i = 0; i < minimizedStates.length; i++) {
+    let actualMinimizedState = minimizedStates[i]
+    let actualMinimizedFinishedState = returnFinishStateOfMinimizedState(actualMinimizedState, finishStates, states)
+    minimizedFinishStates.push(actualMinimizedFinishedState)
+  }
+  
+  console.log("Estados minimizados:")
+  console.log(minimizedStates)
 
+  console.log("Nuevas transiciones:")
+  console.log(transitions)
 
-
-
+  console.log("Nuevos estados finanles:")
+  console.log(minimizedFinishStates)
 }
+
+const returnFinishStateOfMinimizedState = (minimizedState, finishStates, states) => {
+  let foundFinishState = false
+  let finishState = ""
+  for (let i = 0; i  < states.length && !foundFinishState; i++) {
+    let actualState = states[i]
+    if (minimizedState.includes(actualState)) {
+      finishState = finishStates[i]
+      foundFinishState = true
+    }
+  }
+
+  return finishState
+} 
 

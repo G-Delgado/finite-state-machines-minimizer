@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Typography, useTheme, Box } from "@mui/material";
-import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition, getInitialPartitionMealy} from "../utils/AutomatonMethods";
+import {getConnectedAutomaton, getConnectedAutomatonMealy, getInitialPartitionMoore, getFinalPartition, getInitialPartitionMealy, mooreJoinPartitionWithTransitionsAndFinishStates} from "../utils/AutomatonMethods";
 import {
   TableContainer,
   Table,
@@ -88,6 +88,8 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         let finalPartition = getFinalPartition(p1, newTransitions)
         console.log("FINAL PARTITIONN!!")
         console.log(finalPartition)
+
+        mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition, {...newFinishStates}, reachableStates, newTransitions)
 
         return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {} };
     } else {
