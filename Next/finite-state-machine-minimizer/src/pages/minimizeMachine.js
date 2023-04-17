@@ -84,6 +84,7 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.dir([...reachableStates]);
         console.log(newFinishStates)
         reachableStates = [...reachableStates]
+        reachableStates.sort()
         // console.log("New Transitions\n" + JSON.stringify(newTransitions))
         // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
         
@@ -105,7 +106,7 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.log(finalPartition)
 
         let {minimizedStates, newMinimizedTransitions, minimizedFinishStates} = mooreJoinPartitionWithTransitionsAndFinishStates(finalPartition, {...newFinishStates}, reachableStates, newTransitions)
-
+        minimizedStates.sort()
         return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {minimizedStates, newMinimizedTransitions, minimizedFinishStates} };
     } else {
       let finishStatesFinal = serializedFinishStatesFinal.map((str) => JSON.parse(str))
@@ -115,6 +116,7 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.dir("Reachable States");
         console.dir([...reachableStates]);
         reachableStates = [...reachableStates]
+        reachableStates.sort()
 
         let p1 = getInitialPartitionMealy(reachableStates, newFinishStates)
 
@@ -123,7 +125,7 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         console.log(finalPartition)
 
         let {minimizedStates, newMinimizedTransitions, minimizedFinishStates} = mealyJoinPartitionWithTransitionsAndExitStates(finalPartition, newFinishStates, reachableStates, newTransitions)
-
+        minimizedStates.sort()
         // console.log("New Transitions\n" + JSON.stringify(newTransitions))
         // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))
         return { connected: { type, newTransitions, reachableStates, newFinishStates }, minimized: {minimizedStates, newMinimizedTransitions, minimizedFinishStates} };
