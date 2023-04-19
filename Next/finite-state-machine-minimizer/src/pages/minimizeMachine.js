@@ -118,13 +118,14 @@ MinimizeMachine.getInitialProps = async ({ query }) => {
         reachableStates = [...reachableStates]
         reachableStates.sort()
 
+        
         let p1 = getInitialPartitionMealy(reachableStates, newFinishStates)
 
         let finalPartition = getFinalPartition(p1, newTransitions)
         console.log("MEALY FINAL PARTITIOOON")
         console.log(finalPartition)
 
-        let {minimizedStates, newMinimizedTransitions, minimizedFinishStates} = mealyJoinPartitionWithTransitionsAndExitStates(finalPartition, newFinishStates, reachableStates, newTransitions)
+        let { minimizedStates, newMinimizedTransitions, minimizedFinishStates} = mealyJoinPartitionWithTransitionsAndExitStates(finalPartition, newFinishStates, reachableStates, newTransitions)
         minimizedStates.sort()
         // console.log("New Transitions\n" + JSON.stringify(newTransitions))
         // console.log("Reachable States\n" + JSON.stringify(Array.from(reachableStates)))

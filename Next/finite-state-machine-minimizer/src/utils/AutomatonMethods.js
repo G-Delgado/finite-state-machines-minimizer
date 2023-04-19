@@ -8,9 +8,15 @@ export function getConnectedAutomaton(
   let statesQueue = initialStates.slice();
   let reachableStates = new Set(statesQueue[0]);
   let finishStatesQueue = finishStates.slice();
-  let newFinishStates = [finishStatesQueue[0]];
+  //let newFinishStates = [finishStatesQueue[0]];
+  let newFinishStates = []
 
-  while (statesQueue.length > 0) {
+  let newFinishDict = {}
+  for (let i = 0; i < initialStates.length; i++) {
+    newFinishDict[initialStates[i]] = finishStates[i]
+  }
+
+  while (statesQueue.length > 0) {  
     let actualState = statesQueue.shift();
     let actualFinishState = finishStatesQueue.shift();
 
@@ -24,10 +30,31 @@ export function getConnectedAutomaton(
         !reachableStates.has(nextState)
       ) {
         reachableStates.add(nextState);
-        newFinishStates.push(finishStates[initialStates.indexOf(nextState)]);
+        //newFinishStates.push(finishStates[initialStates.indexOf(nextState)]);
       }
     }
   }
+
+  for (let key in newFinishDict) {
+    if (reachableStates.has(key)) {
+      newFinishStates.push(newFinishDict[key])
+    }
+  }
+
+  // A:0 , B:0, C:1, D:1, E:1, F:0
+  // A? 0
+  // B? 0
+  // C? 1
+  // D? 1
+  // E? 1
+  // F  0
+  
+  // A C B 0 -> A,C,B (0,1,0)
+  // B C D 0 -> A,C,B,D (0,1,0,1)
+  // C F E 1 -> A,C,B,D,F,E (0,1,0,1,0,1)
+  // D F E 1  X
+  // E F E 1  X
+  // F F F 9  X
 
   // Filter transitions for reachableStates only
 
